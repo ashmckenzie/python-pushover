@@ -34,7 +34,7 @@ GLANCE_URL = BASE_URL + "glances.json"
 SOUNDS = None
 
 
-def get_sounds():
+def get_sounds(token):
     """Fetch and return a list of sounds (as a list of strings) recognized by
     Pushover and that can be used in a notification message.
 
@@ -43,7 +43,8 @@ def get_sounds():
     """
     global SOUNDS
     if not SOUNDS:
-        request = Request("get", SOUND_URL, {})
+        payload = {"token": token} 
+        request = Request("get", SOUND_URL, payload)
         SOUNDS = request.answer["sounds"]
     return SOUNDS
 
@@ -250,7 +251,7 @@ class Client:
                 payload[key] = int(time.time())
             elif key == "sound":
                 if not SOUNDS:
-                    get_sounds()
+                    get_sounds(self.api_token)
                 if value not in SOUNDS:
                     raise ValueError("{0}: invalid sound".format(value))
                 else:
